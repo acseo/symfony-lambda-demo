@@ -1,0 +1,4 @@
+framework:
+    assets:
+        base_urls:
+            - '%env(PROD_ASSET_URL)%'

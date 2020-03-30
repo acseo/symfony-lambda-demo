@@ -1,0 +1,40 @@
+service: acseo-the-office-api
+
+provider:
+    name: aws
+    region: eu-west-3 # Paris
+    runtime: provided
+    environment:
+        # Symfony environment variables
+        APP_ENV: prod
+
+plugins:
+    - ./vendor/bref/bref
+
+package:
+    exclude:
+        - node_modules/**
+        - tests/**
+
+functions:
+    website:
+        handler: public/index.php
+        timeout: 28 # in seconds (API Gateway has a timeout of 29 seconds)
+        layers:
+            - ${bref:layer.php-73-fpm}
+        events:
+            -   http: 'ANY /'
+            -   http: 'ANY /{proxy+}'
+        # vpc:
+        #     securityGroupIds:
+        #         - sg-7f6a0510
+        #     subnetIds:
+        #         - subnet-95d2effc
+        #         - subnet-3daffb46
+        #         - subnet-2740d96a           
+    console:
+        handler: bin/console
+        timeout: 120 # in seconds
+        layers:
+            - ${bref:layer.php-73} # PHP
+            - ${bref:layer.console} # The "console" layer
